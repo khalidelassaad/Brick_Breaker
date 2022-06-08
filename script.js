@@ -1,5 +1,4 @@
-const LOWER_DIMENSION_BOUND = 10;
-const UPPER_DIMENSION_BOUND = 55;
+const GLOBAL_SIZE = 10;
 
 function generateEmptyGrid(size) {
   let grid = [];
@@ -48,7 +47,7 @@ function doesCoordsListContainCoords(coordsList, coords) {
 }
 
 function runGame() {
-  const size = getRandomInt(LOWER_DIMENSION_BOUND, UPPER_DIMENSION_BOUND);
+  const size = getRandomInt(GLOBAL_SIZE, GLOBAL_SIZE);
   const grid = generateEmptyGrid(size);
 
   function generateRandomCoords() {
@@ -97,22 +96,35 @@ function runGame() {
       currentSnakeCoordsQueue[0][1] + direction[1],
     ];
 
+    // guard against moving back the way we came, do nothing
+    if (currentSnakeCoordsQueue.length > 1) {
+      previousSegment = currentSnakeCoordsQueue[0];
+      previousDirection = [
+        currentSnakeCoordsQueue[1][0] - currentSnakeCoordsQueue[0][0],
+        currentSnakeCoordsQueue[1][1] - currentSnakeCoordsQueue[0][1],
+      ];
+      didWeReverseDirection =
+        previousDirection[0] == direction[0] &&
+        previousDirection[1] == direction[1];
+      if (didWeReverseDirection) {
+        return;
+      }
+    }
+
+    // guard against running into ourselves -- GAME OVER
     if (doesCoordsListContainCoords(currentSnakeCoordsQueue, newSnakeCoords)) {
-      // we ran into ourselves, GAME OVER
-      // disable event listeners
       $(document).unbind("keydown");
-      // display gameover!
       $("body").append("GAME OVER!");
       return;
     }
 
+    // guard against leaving the grid, do nothing
     if (
       newSnakeCoords[0] < 0 ||
       newSnakeCoords[0] > size - 1 ||
       newSnakeCoords[1] < 0 ||
       newSnakeCoords[1] > size - 1
     ) {
-      // We've tried to leave the grid, do nothing
       return;
     }
 
