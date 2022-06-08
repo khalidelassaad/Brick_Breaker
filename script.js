@@ -1,6 +1,5 @@
 const GLOBAL_SIZE = 11;
 
-// TODO: implement hi score
 // TODO: center text
 // TODO: style scoring
 // TODO: style game over!
