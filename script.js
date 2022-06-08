@@ -17,7 +17,7 @@ function insertItemInGrid(grid, coords, item) {
   grid[coords[0]][coords[1]] = item;
 }
 
-function initializeArrowKeyListeners(moveSnake) {
+function initializeArrowKeyListeners(moveSnake, resetGame) {
   $(document).keydown(function (e) {
     switch (e.which) {
       case 37: //left arrow key
@@ -31,6 +31,9 @@ function initializeArrowKeyListeners(moveSnake) {
         break;
       case 40: //bottom arrow key
         moveSnake([1, 0]);
+        break;
+      case 82: // r key
+        resetGame();
         break;
     }
   });
@@ -47,8 +50,7 @@ function doesCoordsListContainCoords(coordsList, coords) {
 }
 
 function runGame() {
-  const size = getRandomInt(GLOBAL_SIZE, GLOBAL_SIZE);
-  const grid = generateEmptyGrid(size);
+  const size = GLOBAL_SIZE;
 
   function generateRandomCoords() {
     return [getRandomInt(0, size - 1), getRandomInt(0, size - 1)];
@@ -142,6 +144,17 @@ function runGame() {
     render(grid);
   }
 
+  function resetGame() {
+    grid = generateEmptyGrid(size);
+    currentSnakeCoordsQueue = [generateRandomCoords()];
+    currentFruitCoords = generateRandomFruitCoords();
+    currentScore = 0;
+
+    insertItemInGrid(grid, currentSnakeCoordsQueue[0], 1);
+    insertItemInGrid(grid, currentFruitCoords, 2);
+  }
+
+  let grid = generateEmptyGrid(size);
   let currentSnakeCoordsQueue = [generateRandomCoords()];
   let currentFruitCoords = generateRandomFruitCoords();
   let currentScore = 0;
@@ -149,7 +162,7 @@ function runGame() {
   insertItemInGrid(grid, currentSnakeCoordsQueue[0], 1);
   insertItemInGrid(grid, currentFruitCoords, 2);
 
-  initializeArrowKeyListeners(moveSnake);
+  initializeArrowKeyListeners(moveSnake, resetGame);
 
   render(grid);
 }
