@@ -1,7 +1,6 @@
 const GLOBAL_SIZE = 12;
 const TICK_TIME_MS = 200;
 
-//TODO: make game gamestop red, green
 //TODO: make 320px by 320px
 
 function generateEmptyGrid(size) {
