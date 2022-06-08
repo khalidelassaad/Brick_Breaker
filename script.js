@@ -1,4 +1,9 @@
-const GLOBAL_SIZE = 10;
+const GLOBAL_SIZE = 13;
+
+// TODO: implement hi score
+// TODO: center text
+// TODO: style scoring
+// TODO: style game over!
 
 function generateEmptyGrid(size) {
   let grid = [];

@@ -1,11 +1,11 @@
-*{
-	padding: 0;
-	margin: 0;
-	
-}
-
-#canvas1 {
-	background: #eee;
-	display: block;
-	margin: :0 auto;
+body {
+  height: 320px;
+  width: 320px;
+  background-color: lightgreen;
+  border: 2px solid;
+  border-radius: 10px;
+  margin: 10px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
 }
