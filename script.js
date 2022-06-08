@@ -3,7 +3,6 @@ const GLOBAL_SIZE = 11;
 // TODO: center text
 // TODO: style scoring
 // TODO: style game over!
-// TODO: fix bug with long snake going around edges
 // TODO: implement keypress direction save and ticking movement
 
 function generateEmptyGrid(size) {
@@ -95,7 +94,7 @@ function runGame() {
 
   function render(grid) {
     // empty grid: ⬜
-    // snake cell: 🟪
+    // snake cell: ⬛
     // fruit cell: 🟩
 
     let buildString = `\
@@ -110,7 +109,7 @@ function runGame() {
         if (value === 0) {
           buildString += "⬜";
         } else if (value === 1) {
-          buildString += "🟪";
+          buildString += "⬛";
         } else if (value === 2) {
           buildString += "🟩";
         }
