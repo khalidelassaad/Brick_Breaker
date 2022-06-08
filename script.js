@@ -1,9 +1,12 @@
-const GLOBAL_SIZE = 13;
+const GLOBAL_SIZE = 11;
 
 // TODO: implement hi score
 // TODO: center text
 // TODO: style scoring
 // TODO: style game over!
+// TODO: fix bug with long snake going around edges
+// TODO: implement keypress direction save and ticking movement
+// TODO: handle any key press resets at game over screen
 
 function generateEmptyGrid(size) {
   let grid = [];
@@ -80,22 +83,29 @@ function runGame() {
 
   function render(grid) {
     // empty grid: ⬜
-    // snake cell: ⬛
+    // snake cell: 🟪
     // fruit cell: 🟩
 
-    let buildString = "Score: " + currentScore + "<br>";
+    let buildString = `\
+    <div class="scores-container">
+      <span class="score">Score: ${currentScore}</span>
+      <span class="hi-score"> Hi-Score: ${hiScore}</span>
+    </div>`;
+
+    buildString += '<div class="game-container"><br>';
     for (const rowList of grid) {
       for (const value of rowList) {
         if (value === 0) {
           buildString += "⬜";
         } else if (value === 1) {
-          buildString += "⬛";
+          buildString += "🟪";
         } else if (value === 2) {
           buildString += "🟩";
         }
       }
       buildString += "<br>";
     }
+    buildString += "</div>";
     $("body").html(buildString);
   }
 
@@ -144,6 +154,9 @@ function runGame() {
     if (isSameCoords(newSnakeCoords, currentFruitCoords)) {
       generateNewFruit();
       currentScore++;
+      if (currentScore > hiScore) {
+        hiScore = currentScore;
+      }
     } else {
       const newlyEmptiedCell = currentSnakeCoordsQueue.pop();
       grid[newlyEmptiedCell[0]][newlyEmptiedCell[1]] = 0;
@@ -168,6 +181,7 @@ function runGame() {
   let currentSnakeCoordsQueue = [generateRandomCoords()];
   let currentFruitCoords = generateRandomFruitCoords();
   let currentScore = 0;
+  let hiScore = 0;
 
   insertItemInGrid(grid, currentSnakeCoordsQueue[0], 1);
   insertItemInGrid(grid, currentFruitCoords, 2);
