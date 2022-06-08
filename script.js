@@ -1,4 +1,4 @@
-const GLOBAL_SIZE = 11;
+const GLOBAL_SIZE = 3;
 
 // TODO: implement hi score
 // TODO: center text
@@ -6,7 +6,7 @@ const GLOBAL_SIZE = 11;
 // TODO: style game over!
 // TODO: fix bug with long snake going around edges
 // TODO: implement keypress direction save and ticking movement
-// TODO: handle any key press resets at game over screen
+// TODO: handle any key press
 
 function generateEmptyGrid(size) {
   let grid = [];
