@@ -20,16 +20,20 @@ function insertItemInGrid(grid, coords, item) {
 function initializeArrowKeyListeners(moveSnake, resetGame) {
   $(document).keydown(function (e) {
     switch (e.which) {
-      case 37: //left arrow key
+      case 37: // left arrow key
+      case 65: // a key
         moveSnake([0, -1]);
         break;
-      case 38: //up arrow key
+      case 38: // up arrow key
+      case 87: // w key
         moveSnake([-1, 0]);
         break;
-      case 39: //right arrow key
+      case 39: // right arrow key
+      case 68: // d key
         moveSnake([0, 1]);
         break;
-      case 40: //bottom arrow key
+      case 40: // bottom arrow key
+      case 83: // s key
         moveSnake([1, 0]);
         break;
       case 82: // r key
@@ -115,7 +119,6 @@ function runGame() {
 
     // guard against running into ourselves -- GAME OVER
     if (doesCoordsListContainCoords(currentSnakeCoordsQueue, newSnakeCoords)) {
-      $(document).unbind("keydown");
       $("body").append("GAME OVER!");
       return;
     }
@@ -152,6 +155,8 @@ function runGame() {
 
     insertItemInGrid(grid, currentSnakeCoordsQueue[0], 1);
     insertItemInGrid(grid, currentFruitCoords, 2);
+
+    render(grid);
   }
 
   let grid = generateEmptyGrid(size);
