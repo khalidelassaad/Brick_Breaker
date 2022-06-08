@@ -1,7 +1,7 @@
 {
   "description": "An interactive NFT snake game!",
-  "image": "ipfs://INSERT_PATH_TO_YOUR_THUMBNAIL_CID_HERE",
-  "animation_url": "ipfs://INSERT_PATH_TO_YOUR_SRC_DIRECTORY_HERE",
+  "image": "ipfs://QmfBQJhCWqH7prw4c5i93rhvrsaXFxzefAbPR3Mazionbh",
+  "animation_url": "ipfs://QmXvNuHN4oRR9h8Ndms2bXrUzRj374BcQ6GN3So6oQ3fQK",
   "name": "Snaked 'n' Short v1.0",
   "artist": "Khalid Elassaad",
   "royalty_percentage": 10
