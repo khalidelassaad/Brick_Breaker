@@ -1,3 +1,5 @@
+// author: khalidelassaad.com
+
 const GLOBAL_SIZE = 11;
 const TICK_TIME_MS = 200;
 
