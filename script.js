@@ -5,7 +5,6 @@ const GLOBAL_SIZE = 11;
 // TODO: style game over!
 // TODO: fix bug with long snake going around edges
 // TODO: implement keypress direction save and ticking movement
-// TODO: handle any key press from game over screen to reset game
 
 function generateEmptyGrid(size) {
   let grid = [];
@@ -24,7 +23,7 @@ function insertItemInGrid(grid, coords, item) {
   grid[coords[0]][coords[1]] = item;
 }
 
-function initializeArrowKeyListeners(moveSnake, resetGame) {
+function initializeArrowKeyListenersForGame(moveSnake, resetGame) {
   $(document).keydown(function (e) {
     switch (e.which) {
       case 37: // left arrow key
@@ -47,6 +46,20 @@ function initializeArrowKeyListeners(moveSnake, resetGame) {
         resetGame();
         break;
     }
+  });
+}
+
+function displayGameOver() {
+  $("body").append("GAME OVER!");
+}
+
+function handleGameOver(moveSnake, resetGame) {
+  displayGameOver();
+  $(document).unbind("keydown");
+  $(document).keydown(function (e) {
+    $(document).unbind("keydown");
+    resetGame();
+    initializeArrowKeyListenersForGame(moveSnake, resetGame);
   });
 }
 
@@ -133,7 +146,7 @@ function runGame() {
 
     // guard against running into ourselves -- GAME OVER
     if (doesCoordsListContainCoords(currentSnakeCoordsQueue, newSnakeCoords)) {
-      $("body").append("GAME OVER!");
+      handleGameOver(moveSnake, resetGame);
       return;
     }
 
@@ -185,7 +198,7 @@ function runGame() {
   insertItemInGrid(grid, currentSnakeCoordsQueue[0], 1);
   insertItemInGrid(grid, currentFruitCoords, 2);
 
-  initializeArrowKeyListeners(moveSnake, resetGame);
+  initializeArrowKeyListenersForGame(moveSnake, resetGame);
 
   render(grid);
 }
