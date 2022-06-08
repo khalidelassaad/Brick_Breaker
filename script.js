@@ -52,16 +52,16 @@ function runGame() {
     insertItemInGrid(grid, currentFruitCoords, 2);
   }
 
-  function render(grid) {
-    // empty grid: ⬜
-    // snake cell: ⬛
-    // fruit cell: 🟩
-
-    let buildString = `\
+  function scoresRenderString() {
+    return `<br>
     <div class="scores-container">
       <span class="score">Score: ${currentScore}</span>
       <span class="hi-score"> Hi-Score: ${hiScore}</span>
     </div>`;
+  }
+
+  function gameRenderString(grid) {
+    let buildString = "";
 
     buildString += '<div class="game-container"><br>';
     for (const rowList of grid) {
@@ -77,6 +77,30 @@ function runGame() {
       buildString += "<br>";
     }
     buildString += "</div>";
+
+    return buildString;
+  }
+
+  function gameOverRenderString() {
+    return "GAME OVER!";
+  }
+
+  function gameTitleRenderString() {
+    return "Snaked 'n' Short!";
+  }
+
+  function render(grid) {
+    // empty grid: ⬜
+    // snake cell: ⬛
+    // fruit cell: 🟩
+
+    let buildString = "";
+    buildString += gameTitleRenderString();
+    buildString += gameRenderString(grid);
+    buildString += scoresRenderString();
+    if (isGameOver) {
+      buildString += gameOverRenderString();
+    }
     $("body").html(buildString);
   }
 
@@ -107,7 +131,8 @@ function runGame() {
   }
 
   function displayGameOver() {
-    $("body").append("GAME OVER!");
+    isGameOver = true;
+    render(grid);
   }
 
   function handleGameOver(moveSnake, resetGame) {
@@ -221,6 +246,7 @@ function runGame() {
     currentFruitCoords = generateRandomFruitCoords();
     currentScore = 0;
     nextDirection = [-1, 0];
+    isGameOver = False;
 
     insertItemInGrid(grid, currentSnakeCoordsQueue[0], 1);
     insertItemInGrid(grid, currentFruitCoords, 2);
@@ -235,6 +261,7 @@ function runGame() {
   let currentScore = 0;
   let nextDirection = [-1, 0];
   let mainLoopTimeout = null;
+  let isGameOver = false;
 
   let hiScore = 0;
 

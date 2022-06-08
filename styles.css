@@ -1,4 +1,6 @@
 body {
+  font-family: "Courier New", Courier, monospace;
+  font-weight: 800;
   height: 320px;
   width: 320px;
   background-color: rgb(212, 212, 212);
@@ -12,8 +14,6 @@ body {
 }
 
 .scores-container {
-  font-family: "Courier New", Courier, monospace;
-  font-weight: 800;
   width: 100%;
   height: min-content;
   display: flex;
