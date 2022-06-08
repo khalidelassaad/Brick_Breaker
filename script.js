@@ -1,7 +1,5 @@
-const GLOBAL_SIZE = 12;
+const GLOBAL_SIZE = 11;
 const TICK_TIME_MS = 200;
-
-//TODO: make 320px by 320px
 
 function generateEmptyGrid(size) {
   let grid = [];
