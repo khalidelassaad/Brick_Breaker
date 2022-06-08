@@ -1,9 +1,8 @@
 const GLOBAL_SIZE = 11;
 const TICK_TIME_MS = 200;
 
-// TODO: center text
-// TODO: style scoring
-// TODO: style game over!
+//TODO: Edit title
+//TODO: make game gamestop red, green
 
 function generateEmptyGrid(size) {
   let grid = [];
@@ -53,8 +52,7 @@ function runGame() {
   }
 
   function scoresRenderString() {
-    return `<br>
-    <div class="scores-container">
+    return `<div class="scores-container">
       <span class="score">Score: ${currentScore}</span>
       <span class="hi-score"> Hi-Score: ${hiScore}</span>
     </div>`;
@@ -82,11 +80,16 @@ function runGame() {
   }
 
   function gameOverRenderString() {
-    return "GAME OVER!";
+    return `<div class="game-over-container">
+      <h1>GAME OVER!</h1>
+      <span>Press any key to retry...</span>
+    </div>`;
   }
 
   function gameTitleRenderString() {
-    return "Snaked 'n' Short!";
+    return `<div class="game-title-container">
+    Snaked 'n' Short!
+    </div>`;
   }
 
   function render(grid) {
@@ -197,7 +200,7 @@ function runGame() {
     }
 
     if (noMoveBackwardsGuard(direction)) {
-      // TODO: keep moving in old direction
+      // keep moving in previous direction
       direction = [
         currentSnakeCoordsQueue[0][0] - currentSnakeCoordsQueue[1][0],
         currentSnakeCoordsQueue[0][1] - currentSnakeCoordsQueue[1][1],
@@ -245,8 +248,8 @@ function runGame() {
     currentSnakeCoordsQueue = [generateRandomCoords()];
     currentFruitCoords = generateRandomFruitCoords();
     currentScore = 0;
-    nextDirection = [-1, 0];
-    isGameOver = False;
+    nextDirection = [0, 1];
+    isGameOver = false;
 
     insertItemInGrid(grid, currentSnakeCoordsQueue[0], 1);
     insertItemInGrid(grid, currentFruitCoords, 2);
@@ -259,7 +262,7 @@ function runGame() {
   let currentSnakeCoordsQueue = [generateRandomCoords()];
   let currentFruitCoords = generateRandomFruitCoords();
   let currentScore = 0;
-  let nextDirection = [-1, 0];
+  let nextDirection = [0, 1];
   let mainLoopTimeout = null;
   let isGameOver = false;
 

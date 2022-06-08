@@ -6,7 +6,7 @@ body {
   background-color: rgb(212, 212, 212);
   border: 2px solid;
   border-radius: 10px;
-  /* padding: 10px; */
+  margin: 0px;
   display: flex;
   flex-flow: column;
   align-items: center;
@@ -28,4 +28,27 @@ body {
 
 .game-container {
   width: min-content;
+}
+
+.game-over-container {
+  position: absolute;
+  top: 160px;
+  z-index: 99;
+  color: #ff0000;
+  text-shadow: 2px 2px 2px #000000;
+  background-color: #929292ad;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.game-over-container > h1 {
+  font-size: 30px;
+  margin: 0px;
+}
+
+.game-over-container > span {
+  font-size: 20px;
+  margin: 0px;
 }
