@@ -166,7 +166,7 @@ function runGame() {
     if (noMovementMoveGuard(direction, newSnakeCoords)) {
       return;
     }
-    s;
+
     currentSnakeCoordsQueue.unshift(newSnakeCoords);
     grid[newSnakeCoords[0]][newSnakeCoords[1]] = 1;
 
