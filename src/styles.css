@@ -16,7 +16,6 @@ body {
   flex-flow: column;
   align-items: center;
   justify-content: center;
-  padding-bottom: 5px;
 }
 
 .scores-container {
