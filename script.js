@@ -120,14 +120,7 @@ function runGame() {
     $("body").html(buildString);
   }
 
-  function moveSnake(direction) {
-    // takes grid, currentSnakeCoords, and a direction, transforms grid if the move is possible
-    // direction is either [0,-1] left, [0, 1] right, [-1, 0] up, [1, 0] down
-    let newSnakeCoords = [
-      currentSnakeCoordsQueue[0][0] + direction[0],
-      currentSnakeCoordsQueue[0][1] + direction[1],
-    ];
-
+  function noMovementMoveGuard(direction, newSnakeCoords) {
     // guard against moving back the way we came, do nothing
     if (currentSnakeCoordsQueue.length > 1) {
       previousSegment = currentSnakeCoordsQueue[0];
@@ -139,14 +132,14 @@ function runGame() {
         previousDirection[0] == direction[0] &&
         previousDirection[1] == direction[1];
       if (didWeReverseDirection) {
-        return;
+        return true;
       }
     }
 
     // guard against running into ourselves -- GAME OVER
     if (doesCoordsListContainCoords(currentSnakeCoordsQueue, newSnakeCoords)) {
       handleGameOver(moveSnake, resetGame);
-      return;
+      return true;
     }
 
     // guard against leaving the grid, do nothing
@@ -156,9 +149,24 @@ function runGame() {
       newSnakeCoords[1] < 0 ||
       newSnakeCoords[1] > size - 1
     ) {
-      return;
+      return true;
     }
 
+    return false;
+  }
+
+  function moveSnake(direction) {
+    // takes grid, currentSnakeCoords, and a direction, transforms grid if the move is possible
+    // direction is either [0,-1] left, [0, 1] right, [-1, 0] up, [1, 0] down
+    let newSnakeCoords = [
+      currentSnakeCoordsQueue[0][0] + direction[0],
+      currentSnakeCoordsQueue[0][1] + direction[1],
+    ];
+
+    if (noMovementMoveGuard(direction, newSnakeCoords)) {
+      return;
+    }
+    s;
     currentSnakeCoordsQueue.unshift(newSnakeCoords);
     grid[newSnakeCoords[0]][newSnakeCoords[1]] = 1;
 
@@ -181,6 +189,7 @@ function runGame() {
     currentSnakeCoordsQueue = [generateRandomCoords()];
     currentFruitCoords = generateRandomFruitCoords();
     currentScore = 0;
+    nextDirection = [-1, 0];
 
     insertItemInGrid(grid, currentSnakeCoordsQueue[0], 1);
     insertItemInGrid(grid, currentFruitCoords, 2);
@@ -192,6 +201,8 @@ function runGame() {
   let currentSnakeCoordsQueue = [generateRandomCoords()];
   let currentFruitCoords = generateRandomFruitCoords();
   let currentScore = 0;
+  let nextDirection = [-1, 0];
+
   let hiScore = 0;
 
   insertItemInGrid(grid, currentSnakeCoordsQueue[0], 1);
