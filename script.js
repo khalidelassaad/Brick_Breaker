@@ -1,9 +1,9 @@
 const GLOBAL_SIZE = 11;
+const TICK_TIME_MS = 200;
 
 // TODO: center text
 // TODO: style scoring
 // TODO: style game over!
-// TODO: implement keypress direction save and ticking movement
 
 function generateEmptyGrid(size) {
   let grid = [];
@@ -20,46 +20,6 @@ function getRandomInt(lowerBound, upperBound) {
 
 function insertItemInGrid(grid, coords, item) {
   grid[coords[0]][coords[1]] = item;
-}
-
-function initializeArrowKeyListenersForGame(moveSnake, resetGame) {
-  $(document).keydown(function (e) {
-    switch (e.which) {
-      case 37: // left arrow key
-      case 65: // a key
-        moveSnake([0, -1]);
-        break;
-      case 38: // up arrow key
-      case 87: // w key
-        moveSnake([-1, 0]);
-        break;
-      case 39: // right arrow key
-      case 68: // d key
-        moveSnake([0, 1]);
-        break;
-      case 40: // bottom arrow key
-      case 83: // s key
-        moveSnake([1, 0]);
-        break;
-      case 82: // r key
-        resetGame();
-        break;
-    }
-  });
-}
-
-function displayGameOver() {
-  $("body").append("GAME OVER!");
-}
-
-function handleGameOver(moveSnake, resetGame) {
-  displayGameOver();
-  $(document).unbind("keydown");
-  $(document).keydown(function (e) {
-    $(document).unbind("keydown");
-    resetGame();
-    initializeArrowKeyListenersForGame(moveSnake, resetGame);
-  });
 }
 
 function isSameCoords(coords1, coords2) {
@@ -120,7 +80,61 @@ function runGame() {
     $("body").html(buildString);
   }
 
-  function noMovementMoveGuard(direction, newSnakeCoords) {
+  function initializeArrowKeyListenersForGame(moveSnake, resetGame) {
+    $(document).keydown(function (e) {
+      switch (e.which) {
+        case 37: // left arrow key
+        case 65: // a key
+          nextDirection = [0, -1];
+          break;
+        case 38: // up arrow key
+        case 87: // w key
+          nextDirection = [-1, 0];
+          break;
+        case 39: // right arrow key
+        case 68: // d key
+          nextDirection = [0, 1];
+          break;
+        case 40: // bottom arrow key
+        case 83: // s key
+          nextDirection = [1, 0];
+          break;
+        case 82: // r key
+          resetGame();
+          break;
+      }
+    });
+  }
+
+  function displayGameOver() {
+    $("body").append("GAME OVER!");
+  }
+
+  function handleGameOver(moveSnake, resetGame) {
+    displayGameOver();
+    $(document).unbind("keydown");
+    $(document).keydown(function (e) {
+      $(document).unbind("keydown");
+      resetGame();
+      initializeArrowKeyListenersForGame(moveSnake, resetGame);
+    });
+  }
+
+  function noLeaveGridGuard(newSnakeCoords) {
+    // guard against leaving the grid, do nothing
+    if (
+      newSnakeCoords[0] < 0 ||
+      newSnakeCoords[0] > size - 1 ||
+      newSnakeCoords[1] < 0 ||
+      newSnakeCoords[1] > size - 1
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  function noMoveBackwardsGuard(direction) {
     // guard against moving back the way we came, do nothing
     if (currentSnakeCoordsQueue.length > 1) {
       previousSegment = currentSnakeCoordsQueue[0];
@@ -135,24 +149,14 @@ function runGame() {
         return true;
       }
     }
+  }
 
+  function gameOverGuard(newSnakeCoords) {
     // guard against running into ourselves -- GAME OVER
     if (doesCoordsListContainCoords(currentSnakeCoordsQueue, newSnakeCoords)) {
       handleGameOver(moveSnake, resetGame);
       return true;
     }
-
-    // guard against leaving the grid, do nothing
-    if (
-      newSnakeCoords[0] < 0 ||
-      newSnakeCoords[0] > size - 1 ||
-      newSnakeCoords[1] < 0 ||
-      newSnakeCoords[1] > size - 1
-    ) {
-      return true;
-    }
-
-    return false;
   }
 
   function moveSnake(direction) {
@@ -163,8 +167,22 @@ function runGame() {
       currentSnakeCoordsQueue[0][1] + direction[1],
     ];
 
-    if (noMovementMoveGuard(direction, newSnakeCoords)) {
-      return;
+    if (noLeaveGridGuard(newSnakeCoords)) {
+      return false;
+    }
+
+    if (noMoveBackwardsGuard(direction)) {
+      // TODO: keep moving in old direction
+      direction = [
+        currentSnakeCoordsQueue[0][0] - currentSnakeCoordsQueue[1][0],
+        currentSnakeCoordsQueue[0][1] - currentSnakeCoordsQueue[1][1],
+      ];
+      moveSnake(direction);
+      return false;
+    }
+
+    if (gameOverGuard(newSnakeCoords)) {
+      return true;
     }
 
     currentSnakeCoordsQueue.unshift(newSnakeCoords);
@@ -182,9 +200,22 @@ function runGame() {
     }
 
     render(grid);
+
+    return false;
+  }
+
+  function startMainLoop() {
+    mainLoopTimeout = setTimeout(() => {
+      if (!moveSnake(nextDirection)) {
+        startMainLoop();
+      }
+    }, TICK_TIME_MS);
   }
 
   function resetGame() {
+    clearTimeout(mainLoopTimeout);
+    mainLoopTimeout = null;
+
     grid = generateEmptyGrid(size);
     currentSnakeCoordsQueue = [generateRandomCoords()];
     currentFruitCoords = generateRandomFruitCoords();
@@ -195,6 +226,7 @@ function runGame() {
     insertItemInGrid(grid, currentFruitCoords, 2);
 
     render(grid);
+    startMainLoop();
   }
 
   let grid = generateEmptyGrid(size);
@@ -202,6 +234,7 @@ function runGame() {
   let currentFruitCoords = generateRandomFruitCoords();
   let currentScore = 0;
   let nextDirection = [-1, 0];
+  let mainLoopTimeout = null;
 
   let hiScore = 0;
 
@@ -211,6 +244,7 @@ function runGame() {
   initializeArrowKeyListenersForGame(moveSnake, resetGame);
 
   render(grid);
+  startMainLoop();
 }
 
 runGame();
