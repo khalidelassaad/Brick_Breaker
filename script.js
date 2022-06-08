@@ -1,8 +1,8 @@
-const GLOBAL_SIZE = 11;
+const GLOBAL_SIZE = 12;
 const TICK_TIME_MS = 200;
 
-//TODO: Edit title
 //TODO: make game gamestop red, green
+//TODO: make 320px by 320px
 
 function generateEmptyGrid(size) {
   let grid = [];
@@ -61,7 +61,7 @@ function runGame() {
   function gameRenderString(grid) {
     let buildString = "";
 
-    buildString += '<div class="game-container"><br>';
+    buildString += '<div class="game-container">';
     for (const rowList of grid) {
       for (const value of rowList) {
         if (value === 0) {
@@ -88,7 +88,9 @@ function runGame() {
 
   function gameTitleRenderString() {
     return `<div class="game-title-container">
-    Snaked 'n' Short!
+    <span>S</span><span class="greentext">naked</span>
+    <span> 'n' </span>
+    <span class="redtext">Short</span>!
     </div>`;
   }
 

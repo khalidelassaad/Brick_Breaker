@@ -11,6 +11,7 @@ body {
   flex-flow: column;
   align-items: center;
   justify-content: center;
+  padding-bottom: 5px;
 }
 
 .scores-container {
@@ -51,4 +52,21 @@ body {
 .game-over-container > span {
   font-size: 20px;
   margin: 0px;
+}
+
+.greentext {
+  color: #00830b;
+}
+
+.redtext {
+  color: #ff0000;
+}
+
+.game-title-container {
+  font-size: 24px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  text-align: center;
 }
