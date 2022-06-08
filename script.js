@@ -1,223 +1,145 @@
-var canvas=document.getElementById("canvas1");
-var ctx=canvas.getContext("2d");
+const LOWER_DIMENSION_BOUND = 10;
+const UPPER_DIMENSION_BOUND = 55;
 
-/*ctx.beginPath();
-ctx.rect(20,40,50,50);
-ctx.fillStyle="#FF0000";
-ctx.fill();
-ctx.strokeStyle='rgba(0,0,255,0.5)';
-ctx.stroke();
-ctx.closePath();
+function generateEmptyGrid(size) {
+  let grid = [];
+  for (let i = 0; i < size; i++) {
+    grid.push([...Array(size)].map((x) => 0));
+  }
 
-ctx.beginPath();
-ctx.arc(240,160,20,0,Math.PI*2,false);
-ctx.fillStyle="green";
-ctx.fill();
-ctx.strokeStyle='rgba(0,0,255,0.5)';
-ctx.stroke();
-ctx.closePath();*/
-
-var x=canvas.width/2;
-var y=canvas.height-30;
-var dx=2;
-var dy=-2;
-var ballRadius=5;
-var paddleHeight=10;
-var paddleWidth=75;
-var paddleX=(canvas.width-paddleWidth)/2;
-var rightPressed=false;
-var leftPressed=false;
-var brickRowCount=6;
-var brickColumnCount=8;
-var brickWidth=75;
-var brickHeight=20;
-var brickPadding=10;
-var brickOffSetTop=30;
-var brickOffSetLeft=30;
-var score=0;
-var lives=3;
-
-var bricks=[];
-for(let c=0;c<brickColumnCount;c++)
-{
-	bricks[c]=[];
-	for(let r=0;r<brickRowCount;r++)
-	{
-		bricks[c][r]={x:0,y:0,status:1};
-	}
+  return grid;
 }
 
-document.addEventListener("keydown",keyDownHandler);
-document.addEventListener("keyup",keyUpHandler);
-
-document.addEventListener("mousemove",mouseMoveHandler);
-
-function mouseMoveHandler(e)
-{
-	var relativeX = e.clientX-canvas.offsetLeft;
-	if(relativeX>0+paddleWidth/2 && relativeX < canvas.width-paddleWidth/2)
-	{
-		paddleX= relativeX-paddleWidth/2;
-	}
-}
-function drawBricks()
-{
-	for(let c=0;c<brickColumnCount;c++)
-	{
-		for(let r=0;r<brickRowCount;r++)
-		{
-			if(bricks[c][r].status==1)
-			{
-			var brickX=(c*(brickWidth+brickPadding)+brickOffSetLeft);
-			var brickY=(r*(brickHeight+brickPadding)+brickOffSetTop);
-			bricks[c][r].x=brickX;
-			bricks[c][r].y=brickY;
-			
-			ctx.beginPath();
-			ctx.rect(brickX,brickY,brickWidth,brickHeight);
-			ctx.fillStyle="#00095DD";
-			ctx.fill();
-			ctx.strokeStyle='rgba(0,0,255,0.5)';
-			ctx.stroke();
-			ctx.closePath();
-			}
-
-		}
-	}
-}
-function keyDownHandler(e){
-	if(e.keyCode==39)
-	{
-		rightPressed=true;
-	}
-	else if(e.keyCode==37)
-	{
-		leftPressed=true;
-	}
-
+function getRandomInt(lowerBound, upperBound) {
+  return Math.floor(Math.random() * (upperBound - lowerBound + 1)) + lowerBound;
 }
 
-function keyUpHandler(e){
-	if(e.keyCode==39)
-	{
-		rightPressed=false;
-	}
-	else if(e.keyCode==37)
-	{
-		leftPressed=false;
-	}
-
+function insertItemInGrid(grid, coords, item) {
+  grid[coords[0]][coords[1]] = item;
 }
 
-function drawBall()
-{
-	ctx.beginPath();
-	ctx.arc(x,y,ballRadius,0,Math.PI*2);
-	ctx.fillStyle="#0095DD";
-	ctx.fill();
-	ctx.closePath();
+function initializeArrowKeyListeners(moveSnake) {
+  $(document).keydown(function (e) {
+    switch (e.which) {
+      case 37: //left arrow key
+        moveSnake([0, -1]);
+        break;
+      case 38: //up arrow key
+        moveSnake([-1, 0]);
+        break;
+      case 39: //right arrow key
+        moveSnake([0, 1]);
+        break;
+      case 40: //bottom arrow key
+        moveSnake([1, 0]);
+        break;
+    }
+  });
 }
 
-function drawPaddle()
-{
-	ctx.beginPath();
-	ctx.rect(paddleX,canvas.height-(paddleHeight),paddleWidth,paddleHeight);
-	ctx.fillStyle="#0095DD";
-	ctx.fill();
-	ctx.closePath();
-}
-function collisonDetection()
-{
-	for(var c=0;c<brickColumnCount;c++)
-	{
-		for(var r=0;r<brickRowCount;r++)
-		{
-			var b=bricks[c][r];
-			if(b.status==1)
-			{
-				if(x>b.x && x< b.x+brickWidth && y>b.y && y< b.y+brickHeight )
-				{
-					dy=-dy;
-					b.status=0;
-					++score;
-					if(brickColumnCount*brickRowCount==score)
-					{
-						alert("YOU WIN");
-						document.location.reload();
-					}
-
-				}
-			}
-		}
-	}
+function isSameCoords(coords1, coords2) {
+  return coords1[0] === coords2[0] && coords1[1] === coords2[1];
 }
 
-function drawScore()
-{
-	ctx.font="16px Arial";
-	ctx.fillStyle="#0095DD";
-	ctx.fillText("Score:"+score,8,20);
-
+function doesCoordsListContainCoords(coordsList, coords) {
+  return coordsList.reduce((prevBool, currentCoords) => {
+    return prevBool || isSameCoords(currentCoords, coords);
+  }, false);
 }
 
-function drawLives()
-{
-	ctx.font="16px Arial";
-	ctx.fillStyle="#0095DD";
-	ctx.fillText("Lives:"+lives,canvas.width-65,20);
+function runGame() {
+  const size = getRandomInt(LOWER_DIMENSION_BOUND, UPPER_DIMENSION_BOUND);
+  const grid = generateEmptyGrid(size);
 
+  function generateRandomCoords() {
+    return [getRandomInt(0, size - 1), getRandomInt(0, size - 1)];
+  }
+
+  function generateRandomFruitCoords() {
+    let coords = generateRandomCoords();
+    while (doesCoordsListContainCoords(currentSnakeCoordsQueue, coords)) {
+      coords = generateRandomCoords();
+    }
+    return coords;
+  }
+
+  function generateNewFruit() {
+    currentFruitCoords = generateRandomFruitCoords();
+    insertItemInGrid(grid, currentFruitCoords, 2);
+  }
+
+  function render(grid) {
+    // empty grid: ⬜
+    // snake cell: ⬛
+    // fruit cell: 🟩
+
+    let buildString = "Score: " + currentScore + "<br>";
+    for (const rowList of grid) {
+      for (const value of rowList) {
+        if (value === 0) {
+          buildString += "⬜";
+        } else if (value === 1) {
+          buildString += "⬛";
+        } else if (value === 2) {
+          buildString += "🟩";
+        }
+      }
+      buildString += "<br>";
+    }
+    $("body").html(buildString);
+  }
+
+  function moveSnake(direction) {
+    // takes grid, currentSnakeCoords, and a direction, transforms grid if the move is possible
+    // direction is either [0,-1] left, [0, 1] right, [-1, 0] up, [1, 0] down
+    let newSnakeCoords = [
+      currentSnakeCoordsQueue[0][0] + direction[0],
+      currentSnakeCoordsQueue[0][1] + direction[1],
+    ];
+
+    if (doesCoordsListContainCoords(currentSnakeCoordsQueue, newSnakeCoords)) {
+      // we ran into ourselves, GAME OVER
+      // disable event listeners
+      $(document).unbind("keydown");
+      // display gameover!
+      $("body").append("GAME OVER!");
+      return;
+    }
+
+    if (
+      newSnakeCoords[0] < 0 ||
+      newSnakeCoords[0] > size - 1 ||
+      newSnakeCoords[1] < 0 ||
+      newSnakeCoords[1] > size - 1
+    ) {
+      // We've tried to leave the grid, do nothing
+      return;
+    }
+
+    currentSnakeCoordsQueue.unshift(newSnakeCoords);
+    grid[newSnakeCoords[0]][newSnakeCoords[1]] = 1;
+
+    if (isSameCoords(newSnakeCoords, currentFruitCoords)) {
+      generateNewFruit();
+      currentScore++;
+    } else {
+      const newlyEmptiedCell = currentSnakeCoordsQueue.pop();
+      grid[newlyEmptiedCell[0]][newlyEmptiedCell[1]] = 0;
+    }
+
+    render(grid);
+  }
+
+  let currentSnakeCoordsQueue = [generateRandomCoords()];
+  let currentFruitCoords = generateRandomFruitCoords();
+  let currentScore = 0;
+
+  insertItemInGrid(grid, currentSnakeCoordsQueue[0], 1);
+  insertItemInGrid(grid, currentFruitCoords, 2);
+
+  initializeArrowKeyListeners(moveSnake);
+
+  render(grid);
 }
-function draw()
-{
-	ctx.clearRect(0,0,canvas.width,canvas.height)
-	drawBricks();
-	drawLives();
-	drawBall();
-	drawPaddle();
-	drawScore();
-	collisonDetection();
 
-	if(y+dy < ballRadius){
-			dy=-dy;
-	}
-	else if(y+dy > canvas.height-2*ballRadius)
-	{
-
-		if(x>paddleX && x<paddleX +paddleWidth)
-		{
-			dy=-dy;
-		}
-		else{
-			lives=lives-1;
-			if(!lives)
-			{
-				alert("GAME OVER");
-		    	document.location.reload();
-			}
-			else
-			{
-				x=canvas.width/2;
-				y=canvas.height-30;
-				dx=2;
-				dy=-2;
-				 paddleX=(canvas.width-paddleWidth)/2;
-			}
-	    }
-	}
-
-	if((x+dx < ballRadius|| (x+dx > canvas.width-ballRadius)) ){
-			dx=-dx;
-	}
-	if(rightPressed && paddleX <canvas.width-paddleWidth)
-	{
-		paddleX+=7;
-	}
-	else if(leftPressed && paddleX>0){
-		paddleX-=7;
-	}
-	x += dx;
-	y += dy;
-}
-
-
-setInterval(draw,10);
+runGame();
